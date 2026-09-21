@@ -50,6 +50,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
-});
+} as any);
 
 export default config;

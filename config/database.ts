@@ -68,7 +68,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
         'DATABASE_CONNECTION_TIMEOUT',
         60000
       ),
-    },
+    } as any,
   };
 };
 
