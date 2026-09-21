@@ -11,7 +11,11 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
     );
   }
 
-  // Use Record<string, any> to bypass strict cross-client type checking in TS
+  const databaseUrl = env('DATABASE_URL');
+  if (client === 'postgres' && !databaseUrl) {
+    throw new Error('❌ DATABASE_URL environment variable is missing on Render!');
+  }
+
   const connections: Record<string, any> = {
     mysql: {
       client: 'mysql',
@@ -27,9 +31,9 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
     postgres: {
       client: 'postgres',
       connection: {
-        connectionString: env('DATABASE_URL'),
+        connectionString: databaseUrl,
         ssl: {
-          rejectUnauthorized: false, // Required for Supabase and Neon
+          rejectUnauthorized: false,
         },
       },
       pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
