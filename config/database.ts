@@ -11,7 +11,8 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
     );
   }
 
-  const connections: Record<Core.Config.Database.ClientKind, Core.Config.Database['connection']> = {
+  // Use Record<string, any> to bypass strict cross-client type checking in TS
+  const connections: Record<string, any> = {
     mysql: {
       client: 'mysql',
       connection: {
