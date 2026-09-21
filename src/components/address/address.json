@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_address_addresses",
+  "info": {
+    "displayName": "Address"
+  },
+  "options": {},
+  "attributes": {
+    "Building": {
+      "type": "string",
+      "required": true
+    },
+    "place": {
+      "type": "string",
+      "required": true
+    },
+    "pin": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

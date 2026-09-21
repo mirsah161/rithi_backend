@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "work_pages",
+  "info": {
+    "singularName": "work-page",
+    "pluralName": "work-pages",
+    "displayName": "Work Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}
