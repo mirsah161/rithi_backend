@@ -12,8 +12,9 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
   }
 
   const databaseUrl = env('DATABASE_URL');
+
   if (client === 'postgres' && !databaseUrl) {
-    throw new Error('❌ DATABASE_URL environment variable is missing on Render!');
+    throw new Error('DATABASE_URL environment variable is missing!');
   }
 
   const connections: Record<string, any> = {
@@ -26,18 +27,35 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
         user: env('DATABASE_USERNAME', 'strapi'),
         password: env('DATABASE_PASSWORD', 'strapi'),
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
+      },
     },
+
     postgres: {
       client: 'postgres',
-      // Pass the connection string directly as a string, along with SSL options
-      connection: `${databaseUrl}?sslmode=require`,
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      connection: {
+        connectionString: databaseUrl,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
+      },
     },
+
     sqlite: {
       client: 'sqlite',
       connection: {
-        filename: path.join(__dirname, '..', '..', env('DATABASE_FILENAME', '.tmp/data.db')),
+        filename: path.join(
+          __dirname,
+          '..',
+          '..',
+          env('DATABASE_FILENAME', '.tmp/data.db')
+        ),
       },
       useNullAsDefault: true,
     },
@@ -46,7 +64,10 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
   return {
     connection: {
       ...connections[client],
-      acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
+      acquireConnectionTimeout: env.int(
+        'DATABASE_CONNECTION_TIMEOUT',
+        60000
+      ),
     },
   };
 };
