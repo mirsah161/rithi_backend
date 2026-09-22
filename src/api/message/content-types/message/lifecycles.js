@@ -12,6 +12,7 @@ module.exports = {
                <p><strong>Email:</strong> ${result.email}</p>
                <p><strong>Message:</strong><br/>${result.message}</p>`,
             });
+            console.log("message sented successfully")
         } catch (err) {
             console.log('Failed to send email notification:', err);
         }
