@@ -13,6 +13,14 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
 
   const databaseUrl = env('DATABASE_URL');
 
+  // TEMP DEBUG — remove after troubleshooting
+  console.log('=== DB DEBUG: client =', client);
+  if (databaseUrl) {
+    console.log('=== DB DEBUG: host+db =', databaseUrl.replace(/:([^:@]+)@/, ':<hidden>@'));
+  } else {
+    console.log('=== DB DEBUG: DATABASE_URL is empty/undefined');
+  }
+
   if (client === 'postgres' && !databaseUrl) {
     throw new Error('DATABASE_URL environment variable is missing!');
   }
