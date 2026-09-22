@@ -56,6 +56,8 @@ export default ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       providerOptions: {
         host: env('EMAIL_SMTP_HOST', 'smtp.gmail.com'),
         port: env.int('EMAIL_SMTP_PORT', 587),
+        secure: false, // true for 465, false for other ports
+        family: 4,     // <--- THIS FORCES IPv4 AND FIXES ENETUNREACH ON RENDER
         auth: {
           user: env('EMAIL_SMTP_USER'),
           pass: env('EMAIL_SMTP_PASS'),
@@ -68,3 +70,4 @@ export default ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     },
   },
 });
+
