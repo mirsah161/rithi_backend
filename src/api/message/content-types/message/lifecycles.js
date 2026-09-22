@@ -4,7 +4,7 @@ module.exports = {
 
         try {
             await strapi.plugins['email'].services.email.send({
-                to: 'info@ridhitechindia.com', // Your admin email where you want to receive messages
+                to: 'mirsahmubthaseem@gmail.com', 
                 subject: `New Contact Form Message from ${result.firstName} ${result.lastName}`,
                 text: `You received a new message from your website contact form:\n\nName: ${result.firstName} ${result.lastName}\nEmail: ${result.email}\nMessage:\n${result.message}`,
                 html: `<h3>New Contact Form Message</h3>
