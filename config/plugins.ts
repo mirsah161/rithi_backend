@@ -22,7 +22,7 @@ const deniedTypes = [
   'application/x-mach-binary',
 ];
 
-const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
+export default ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
   'users-permissions': {
     config: {
       jwtManagement: 'refresh',
@@ -50,6 +50,21 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
-} as any);
-
-export default config;
+  email: {
+    config: {
+      provider: 'nodemailer',
+      providerOptions: {
+        host: env('EMAIL_SMTP_HOST', 'smtp.gmail.com'),
+        port: env.int('EMAIL_SMTP_PORT', 587),
+        auth: {
+          user: env('EMAIL_SMTP_USER'),
+          pass: env('EMAIL_SMTP_PASS'),
+        },
+      },
+      settings: {
+        defaultFrom: env('EMAIL_DEFAULT_FROM'),
+        defaultReplyTo: env('EMAIL_DEFAULT_REPLY_TO'),
+      },
+    },
+  },
+});
