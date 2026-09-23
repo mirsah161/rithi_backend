@@ -3,12 +3,12 @@ import type { Core } from '@strapi/strapi';
 export default {
     async getBundle(ctx: any) {
         try {
-            // Exactly matching your 4 frontend queries
+            // Using the recommended Document Service API in Strapi v5
             const [homePage, aboutSections, services, workSections] = await Promise.all([
-                strapi.entityService.findMany('api::home-page.home-page', { populate: '*' }),
-                strapi.entityService.findMany('api::about-section.about-section', { populate: '*' }),
-                strapi.entityService.findMany('api::service.service', { populate: '*' }),
-                strapi.entityService.findMany('api::work-section.work-section', { populate: '*' }),
+                strapi.documents('api::home-page.home-page').findMany({ populate: '*' }),
+                strapi.documents('api::about-section.about-section').findMany({ populate: '*' }),
+                strapi.documents('api::service.service').findMany({ populate: '*' }),
+                strapi.documents('api::work-section.work-section').findMany({ populate: '*' }),
             ]);
 
             return ctx.send({
