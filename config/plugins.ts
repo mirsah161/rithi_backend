@@ -54,20 +54,13 @@ export default ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
   },
   email: {
     config: {
-      provider: 'nodemailer',
+      provider: 'strapi-provider-email-resend',
       providerOptions: {
-        host: env('EMAIL_SMTP_HOST', 'smtp.gmail.com'),
-        port: env.int('EMAIL_SMTP_PORT', 587),
-        secure: false,
-        family: 4,     // <--- THIS LINE IS MANDATORY ON RENDER TO STOP ENETUNREACH
-        auth: {
-          user: env('EMAIL_SMTP_USER'),
-          pass: env('EMAIL_SMTP_PASS'),
-        },
+        apiKey: env('RESEND_API_KEY'),
       },
       settings: {
-        defaultFrom: env('EMAIL_DEFAULT_FROM'),
-        defaultReplyTo: env('EMAIL_DEFAULT_REPLY_TO'),
+        defaultFrom: 'onboarding@resend.dev', // Use this on free tier, or your custom domain later
+        defaultReplyTo: 'mirsahmubthaseem@gmail.com',
       },
     },
   },
