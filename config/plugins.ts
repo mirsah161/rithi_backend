@@ -1,4 +1,6 @@
 import type { Core } from '@strapi/strapi';
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 
 const allowedMediaTypes = [
   'image/*',
