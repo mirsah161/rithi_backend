@@ -22,7 +22,7 @@ export default factories.createCoreController('api::message.message', ({ strapi 
 
         // 2. Clean up expired timestamps and check rate limits
         let timestamps = submissionTracker.get(clientIp) || [];
-        timestamps = timestamps.filter(timestamp => now - timestamp < WINDOW_MS);
+        timestamps = timestamps.filter((timestamp: number) => now - timestamp < WINDOW_MS);
 
         if (timestamps.length >= MAX_REQUESTS) {
             ctx.status = 429;
@@ -37,10 +37,12 @@ export default factories.createCoreController('api::message.message', ({ strapi 
             return;
         }
 
-        // 3. Server-side Payload Validation
-        const { data } = ctx.request.body;
-        if (!data || !data.firstName || !data.email || !data.message) {
-            return ctx.badRequest('Missing required fields: firstName, email, or message.');
+        // 3. Server-side Payload Validation & Type Assertion
+        const requestBody = ctx.request.body as { data?: Record<string, any> };
+        const data = requestBody?.data;
+
+        if (!data || !data.firstName || !data.email || !data.message || !data.token) {
+            return ctx.badRequest('Missing required fields or security token.');
         }
 
         // Validate email format on server side
@@ -49,12 +51,31 @@ export default factories.createCoreController('api::message.message', ({ strapi 
             return ctx.badRequest('Invalid email address format.');
         }
 
-        // 4. Record current request timestamp for this IP
+        // 4. Verify Google reCAPTCHA v3 Token
+        try {
+            const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+            const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${data.token}`;
+
+            const recaptchaRes = await fetch(verifyUrl, { method: 'POST' });
+            const recaptchaJson = (await recaptchaRes.json()) as { success: boolean; score?: number };
+
+            // reCAPTCHA v3 returns a score from 0.0 (bot) to 1.0 (human)
+            if (!recaptchaJson.success || (recaptchaJson.score !== undefined && recaptchaJson.score < 0.5)) {
+                return ctx.badRequest('Suspicious activity detected. Submission blocked.');
+            }
+        } catch (error) {
+            console.error('reCAPTCHA verification network error:', error);
+            return ctx.badRequest('Failed to verify security token.');
+        }
+
+        // Remove the temporary token from data so Strapi doesn't crash trying to save it to your database schema
+        delete data.token;
+
+        // 5. Record current request timestamp for this IP
         timestamps.push(now);
         submissionTracker.set(clientIp, timestamps);
 
-        // 5. Proceed with the standard Strapi creation logic.
-        // This triggers your database save and automatically calls your existing afterCreate lifecycle hook (sending the email via Resend)!
+        // 6. Proceed with standard Strapi creation logic
         return super.create(ctx);
     },
 }));
